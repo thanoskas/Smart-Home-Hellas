@@ -1,0 +1,455 @@
+substitutions:
+  name: "shh-4r"
+  friendly_name: "SHH 4 Relay Board"
+  project_name: "Shh.4-relay-board"
+  project_version: "1.0"
+  device_description: Smart Home Hellas 4 Relay
+  relay1_restore_mode: RESTORE_DEFAULT_OFF
+  relay2_restore_mode: RESTORE_DEFAULT_OFF
+  relay3_restore_mode: RESTORE_DEFAULT_OFF
+  relay4_restore_mode: RESTORE_DEFAULT_OFF
+
+
+esphome:
+  name: "${name}"
+  name_add_mac_suffix: true
+  project:
+    name: "${project_name}"
+    version: "${project_version}"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+dashboard_import:
+  package_import_url: github://github.com/thanoskas/Smart-Home-Hellas/shh-4r.yaml
+
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Example configuration entry for debug
+debug:
+  update_interval: 5s
+
+
+# Enable Home Assistant API
+api:
+   reboot_timeout: 0s #360min
+
+mqtt:
+  broker: !secret broker
+  port: !secret port
+  username: !secret username
+  password: !secret password
+  discovery: true
+  reboot_timeout: 0s #360min
+#  topic_prefix: ${friendly_name}
+#  log_topic: ${friendly_name}/logs
+
+
+wifi:
+  use_address: 192.168.31.97
+  networks:
+  - ssid: !secret wifi_ssid
+    password: !secret wifi_password 
+  - ssid: "XXXXX"
+  ap:
+
+
+
+# Example configuration entry for debug
+#debug:
+#  update_interval: 5s
+
+captive_portal:
+
+#esp32_improv:
+#  authorizer: none
+
+ota:
+
+
+web_server:
+  port: 80
+
+
+status_led:
+  pin:
+    inverted: true
+    number: GPIO2
+
+time:
+  - platform: sntp
+    id: sntp_time
+
+
+# GPIO4,5: Αισθητήρας Υπερήχων
+# GPIO14,12,15: Πυρόμετρο
+# GPIO16: Ρελέ Αντιστάθμισης
+# GPIO17: Ρελέ 2
+# GPIO18: Ρελέ 3
+# GPIO19: Ρελέ 4
+# GPIO21,22: Αισθητήρας I2C
+# GPIO23: Θερμοκρασίες
+# GPIO27: Εντολή Έναυσης Καυστήρα
+# GPIO25: IN1
+# GPIO26: IN2
+# GPIO33: IN3
+# GPIO32: IN4
+# GPIO36,39: Αναλογικές
+
+#34,35: IO Internal Terminal
+
+
+
+dallas:
+  - pin: GPIO23
+    update_interval: 30s
+
+
+spi:
+  clk_pin: GPIO14
+  miso_pin: GPIO12
+
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: True
+
+
+sensor:
+#DEBUG SENSORS
+#  - platform: debug
+#    free:
+#      name: "${friendly_name} Heap Free"
+#    fragmentation:
+#      name: "${friendly_name} Heap Fragmentation"
+#    block:
+#      name: "${friendly_name} Heap Max Block"
+#    loop_time:
+#      name: "${friendly_name} Loop Time"
+  - platform: max31855
+    name: "${friendly_name} Πυρόμετρο C"
+    id: pyrometer
+    cs_pin: GPIO15
+    update_interval: 60s
+
+
+
+
+  - platform: bme280
+    temperature:
+     name: "${friendly_name} BME280 Εξωτερική Θερμοκρασία 1"
+     id: bme280_temperature
+     oversampling: 16x
+     filters:
+      - filter_out: nan
+
+    pressure:
+      name: "${friendly_name} BME280 Ατμ. Πίεση 2"
+      id: bme280_pressure
+    humidity:
+      name: "${friendly_name} BME280 Σχετική Υγρασία 3"
+      id: bme280_humidity
+    address: 0x76
+    update_interval: 60s
+
+  - platform: template
+    name: "${friendly_name} Απόλυτη Υγρασία 5"
+    lambda: |-
+      const float mw = 18.01534;    // molar mass of water g/mol
+      const float r = 8.31447215;   // Universal gas constant J/mol/K
+      return (6.112 * powf(2.718281828, (17.67 * id(bme280_temperature).state) /
+        (id(bme280_temperature).state + 243.5)) * id(bme280_humidity).state * mw) /
+        ((273.15 + id(bme280_temperature).state) * r); // in grams/m^3
+    accuracy_decimals: 2
+    update_interval: 60s
+    icon: 'mdi:water'
+    unit_of_measurement: 'g/m³'
+  - platform: template
+    name: "${friendly_name} Σημείο Δρόσου 6"
+    lambda: |-
+      return (243.5*(log(id(bme280_humidity).state/100)+((17.67*id(bme280_temperature).state)/
+      (243.5+id(bme280_temperature).state)))/(17.67-log(id(bme280_humidity).state/100)-
+      ((17.67*id(bme280_temperature).state)/(243.5+id(bme280_temperature).state))));
+    unit_of_measurement: °C
+    icon: 'mdi:thermometer-alert'
+
+
+
+
+  - platform: dallas
+    address: XXXXXXXXXXXXXXXXXXXXXXXXXX
+    name: "${friendly_name} S1"
+    id: S1
+
+  - platform: dallas
+    address: XXXXXXXXXXXXXXXXXXXXXXXXX
+    name: "${friendly_name} Θερμοκρασία S2"
+    id: S2
+
+
+
+  - platform: dallas
+    address: XXXXXXXXXXXXXXXXXXXXXXXX
+    name: "${friendly_name} S3"
+    id: S3
+
+  - platform: dallas
+    address: XXXXXXXXXXXXXXXXXXXX
+    name: "${friendly_name} S4"
+    id: S4
+ 
+  - platform: dallas
+    address: XXXXXXXXXXXXXXXXXXXX
+    name: "${friendly_name} S5"
+    id: S5
+ 
+
+  - platform: ultrasonic
+    id: oil_height
+    name: "${friendly_name} Ύψος Δεξαμενής cm"  
+    trigger_pin: GPIO4
+    echo_pin: GPIO5
+#    pulse_time: 20us
+    accuracy_decimals: 2
+    timeout: 4.0m
+    filters:
+      - filter_out: nan
+#      - sliding_window_moving_average:
+#          window_size: 10
+#          send_every: 10
+#          send_first_at: 1
+      - lambda: return (id(tank_height).state) - (x * 100);
+    unit_of_measurement: "cm"
+    icon: 'mdi:gas-station'
+
+
+
+
+  - platform: adc
+    pin: GPIO36
+    id: presure1
+    name: "${friendly_name} Πίεση 1"
+    accuracy_decimals: 2
+    update_interval: 60s
+    attenuation: auto
+    filters:
+      calibrate_linear:
+            - 0.32 -> 0.00
+            - 3.05 -> 12.00
+    icon: 'mdi:gauge'
+    unit_of_measurement: 'bar'
+
+  - platform: adc
+    pin: GPIO39
+    id: presure2
+    name: "${friendly_name} Πίεση 2"
+    accuracy_decimals: 2
+    update_interval: 60s
+    attenuation: auto
+    filters:
+      calibrate_linear:
+            - 0.32 -> 0.00
+            - 3.05 -> 12.00
+    icon: 'mdi:gauge'
+    unit_of_measurement: 'bar'
+
+
+
+  - platform: uptime
+    name: "${friendly_name} Χρόνος Λειτουργίας"
+    id: uptime_seconds
+  - platform: wifi_signal
+    name: "${friendly_name} Σήμα WiFi"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "${friendly_name} Σήμα WiFi %"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "%"
+    entity_category: "diagnostic"
+
+
+
+switch:
+  - platform: gpio
+    pin:
+      number: GPIO16
+      inverted: True
+    name: "${friendly_name} Ρελέ R1"
+    id: relay1
+    restore_mode: ${relay1_restore_mode}
+    icon: mdi:electric-switch-closed
+
+  - platform: gpio
+    pin:
+      number: GPIO17
+      inverted: False
+    name: "${friendly_name} Ρελέ R2"
+    id: relay2
+    restore_mode: ${relay2_restore_mode}
+    icon: mdi:toggle-switch-variant
+
+
+  - platform: gpio
+    pin:
+      number: GPIO18
+      inverted: True
+    name: "${name} ZNX Ρεύμα R3"
+    id: relay3
+#    restore_mode: RESTORE_DEFAULT_ON
+ 
+  - platform: gpio
+    pin:
+      number: GPIO19
+      inverted: True
+    name: "${name} R4"
+    id: relay4
+#    restore_mode: RESTORE_DEFAULT_ON
+ 
+ 
+
+
+number:
+  - platform: template
+    name: "${name} Ρύθμιση ύψους Δεξαμενής"
+    id: "tank_height"
+    optimistic: true
+    initial_value: 148
+    restore_value: yes
+    min_value: 0.00
+    max_value: 300.00
+    step: 0.01
+    icon: "mdi:format-line-height"
+
+
+
+
+
+
+binary_sensor:
+  - platform: gpio
+    name: "${name} Εντολή Έναυσης Καυστήρα"
+    id: fire_order
+    pin:
+      number: GPIO27
+      inverted: True
+      mode: INPUT_PULLUP
+    icon: 'mdi:fire-circle'
+#    device_class: heat
+    filters:
+     - delayed_on_off: 100ms
+
+
+  - platform: gpio
+    name: "${name} Είσοδος 1"
+    id: input1
+    pin:
+      number: GPIO25
+      inverted: True
+      mode: INPUT_PULLUP
+#    device_class: heat
+#    icon: 'mdi:fire-circle'
+    filters:
+     - delayed_on_off: 100ms
+
+  - platform: gpio
+    name: "${name} Είσοδος 2"
+    id: input2
+    pin:
+      number: GPIO26
+      inverted: True
+      mode: INPUT_PULLUP
+#    device_class: heat
+#    icon: 'mdi:fire-circle'
+    filters:
+     - delayed_on_off: 100ms
+  - platform: gpio
+    name: "${name} Είσοδος 3"
+    id: input3
+    pin:
+      number: GPIO33
+      inverted: True
+      mode: INPUT_PULLUP
+#    device_class: heat
+#    icon: 'mdi:fire-circle'
+    filters:
+     - delayed_on_off: 100ms
+
+
+  - platform: gpio
+    name: "${name} Είσοδος 4"
+    id: input4
+    pin:
+      number: GPIO32
+      inverted: True
+      mode: INPUT_PULLUP
+#    device_class: heat
+#    icon: 'mdi:fire-circle'
+    filters:
+     - delayed_on_off: 100ms
+
+
+
+text_sensor:
+#DEBUG TEXT SRENSORS
+  - platform: debug
+    device:
+      name: "Device Info"
+    reset_reason:
+      name: "Reset Reason"
+  - platform: version
+    name: "${name} Έκδοση"
+    hide_timestamp: true
+  - platform: wifi_info
+    ip_address:
+      name: "${name} Διέυθυνση IP"
+    ssid:
+      name: "${name} ESP Συνδεδεμένο SSID"
+#    bssid:
+#      name: "ESP Connected BSSID"
+    mac_address:
+      name: "${name} ESP Mac Wifi Address"
+
+  - platform: template
+    name: "${name} Χρόνος Λειτουργίας Ευανάγνωστο"
+    lambda: |-
+      uint32_t dur = id(uptime_seconds).state;
+      int dys = 0;
+      int hrs = 0;
+      int mnts = 0;
+      if (dur > 86399) {
+        dys = trunc(dur / 86400);
+        dur = dur - (dys * 86400);
+      }
+      if (dur > 3599) {
+        hrs = trunc(dur / 3600);
+        dur = dur - (hrs * 3600);
+      }
+      if (dur > 59) {
+        mnts = trunc(dur / 60);
+        dur = dur - (mnts * 60);
+      }
+      char buffer[17];
+      sprintf(buffer, "%ud, %02u:%02u:%02u", dys, hrs, mnts, dur);
+      return {buffer};
+    icon: mdi:clock-start
+    update_interval: 60s
+
+
+  - platform: template
+    name: "${name} Time"
+    lambda: |-
+      char str[17];
+      time_t currTime = id(sntp_time).now().timestamp;
+      strftime(str, sizeof(str), "%d-%m-%Y %H:%M", localtime(&currTime));
+      return  { str };
+    update_interval: 60s
