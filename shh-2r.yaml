@@ -20,8 +20,8 @@ esp32:
   framework:
     type: arduino
 
-#dashboard_import:
-#  package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-2r.yaml
+dashboard_import:
+  package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-2r.yaml
 
 
 # Enable logging
@@ -84,7 +84,6 @@ time:
 # GPIO21,22: Αισθητήρας I2C
 # GPIO23: Θερμοκρασίες
 # GPIO25: IN1
-# GPIO27: Εντολή Έναυσης Καυστήρα
 # GPIO36: Αναλογική - Πίεσης
 # GPIO39: Αναλογική - CT clamp (V)
 
