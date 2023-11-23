@@ -54,8 +54,8 @@ wifi:
 
 
 # Example configuration entry for debug
-debug:
-  update_interval: 5s
+#debug:
+#  update_interval: 5s
 
 captive_portal:
 
@@ -80,12 +80,11 @@ time:
     id: sntp_time
 
 # GPIO16: Ρελέ 1 (10A)
-# GPIO17: Ρελέ 2 (5A)
+# GPIO17: Ρελέ 2 (SSR 2A)
 # GPIO21,22: Αισθητήρας I2C
 # GPIO23: Θερμοκρασίες
-# GPIO25: IN1
+# GPIO25: IN1 internal
 # GPIO36: Αναλογική - Πίεσης
-# GPIO39: Αναλογική - CT clamp (V)
 
 
 dallas:
@@ -184,45 +183,6 @@ sensor:
     icon: 'mdi:gauge'
     unit_of_measurement: 'bar'
 
-  - platform: adc
-    pin: GPIO36
-    id: adc39
-#    name: "${friendly_name} CT clamp"
-    accuracy_decimals: 2
-    update_interval: 60s
-    attenuation: 11db    
-    icon: 'mdi:gauge'
-    unit_of_measurement: 'V'
-
- 
-  - platform: ct_clamp
-    sensor: adc39
-    id: measured_current
-    name: "${friendly_name} CT Measured Current"
-    update_interval: 60s
-    filters:
-      - calibrate_linear:
-          # Measured value of 0 maps to 0A
-          - 0 -> 0
-          # Known load: 4.0A
-          # Value shown in logs: 0.1333A
-          - 0.1333 -> 4.0
-
-  - platform: template
-    name: "${friendly_name} CT Current"             # This sensor is the one that gets seen by HA, if the reading is below 0.1A then it reports 0, keeps your 0 at 0
-    id: measured_current_corrected
-    lambda: |-
-      if (id(measured_current).state > 0.1){
-        return (id(measured_current).state);
-      } else {
-        return 0.0;
-      }
-    device_class: current
-    update_interval: 10s
-    accuracy_decimals: 2
-    unit_of_measurement: A
-
-  
 
 
   - platform: uptime
@@ -284,11 +244,11 @@ binary_sensor:
 
 text_sensor:
 #DEBUG TEXT SRENSORS
-  - platform: debug
-    device:
-      name: "${friendly_name} Device Info"
-    reset_reason:
-      name: "${friendly_name} Reset Reason"
+#  - platform: debug
+#    device:
+#      name: "${friendly_name} Device Info"
+#    reset_reason:
+#      name: "${friendly_name} Reset Reason"
   - platform: version
     name: "${friendly_name} Έκδοση"
     hide_timestamp: true
