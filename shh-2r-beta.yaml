@@ -1,7 +1,7 @@
 substitutions:
   name: "shh-2r"
   friendly_name: "SHH-2R"
-  project_name: "Shh.2-relay-board"
+  project_name: "Shh.2-relay-board-beta"
   project_version: "1.0"
   device_description: Smart Home Hellas 2 Relay Device
   relay1_restore_mode: RESTORE_DEFAULT_OFF
