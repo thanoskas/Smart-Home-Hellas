@@ -21,7 +21,7 @@ esp32:
     type: arduino
 
 dashboard_import:
-  package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-2r.yaml
+  package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-2r-beta.yaml
 
 
 # Enable logging
