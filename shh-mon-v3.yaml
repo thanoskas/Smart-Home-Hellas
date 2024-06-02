@@ -70,7 +70,7 @@ status_led:
     number: GPIO15
 
 dallas:
-  - pin: GPIO16
+  - pin: GPIO18
 
 i2c:
   sda: 33
