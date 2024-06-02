@@ -9,9 +9,9 @@
 substitutions:
   name: "shh-mon"
   friendly_name: "shh mon"
-  project_name: "shh mon"
+  project_name: "shh.mon"
   project_version: "3.0"
-  device_description: Smart Home Hellas Monitoring Device
+  device_description: "Smart Home Hellas Monitoring Device"
 
 
 
@@ -19,9 +19,8 @@ esphome:
   name: "${name}"
   name_add_mac_suffix: true
   project:
-    name: "${project_name}"
-    version: "${project_version}"
-
+    name: ${project_name}
+    version: ${project_version}
 
 esp32:
   board: lolin_s2_mini
@@ -30,7 +29,7 @@ esp32:
     type: arduino
 
 dashboard_import:
-  package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-mon-v3.yaml
+  package_import_url: github://thanoskas/Smart-Home-Hellas/blob/main/shh-mon-v3.yaml
 
 
 api:
@@ -46,6 +45,8 @@ wifi:
   networks:
   - ssid: !secret wifi_ssid
     password: !secret wifi_password 
+  - ssid: "ALEXALARM"
+    password: "alexgeorge"
   ap:
 
 
