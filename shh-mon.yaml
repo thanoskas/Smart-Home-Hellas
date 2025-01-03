@@ -30,8 +30,8 @@ esp32:
     type: arduino
 
 dashboard_import:
-  package_import_url: github://thanoskas/Smart-Home-Hellas/main/shh-mon.yaml
-  import_full_config: false # or true
+  package_import_url: github://thanoskas/Smart-Home-Hellas/shh-mon.yaml@main
+  import_full_config: true
 
 # Enable logging
 logger:
@@ -53,6 +53,7 @@ wifi:
     password: !secret gen_password
 
 captive_portal:
+
 
 
 http_request:
@@ -79,7 +80,6 @@ status_led:
     number: GPIO15
 
 
-
 i2c:
   sda: 33
   scl: 35
@@ -96,7 +96,7 @@ sensor:
 
 #  - platform: dallas_temp
 #    address: XXXXXXXXXXXXXXXXXXXX
-#    name: "${friendly_name} Dallas S1" #Θερμοκρασία 1
+#    name: "${friendly_name} Dallas S1" #Θερμοκρασία Θερμοδοχείου ZNX
 #    id: S1
 #    update_interval: 60s
 #    filters:
@@ -178,7 +178,6 @@ sensor:
       - lambda: return (id(tank_height).state) - (x * 100);
     unit_of_measurement: "cm"
     icon: 'mdi:gas-station'
-
 
 
 
@@ -387,12 +386,7 @@ number:
 #######################################################################
 
 text_sensor:
-#DEBUG TEXT SRENSORS
-#  - platform: debug
-#    device:
-#      name: "Device Info"
-#    reset_reason:
-#      name: "Reset Reason"
+
   - platform: version
     name: "${friendly_name} Version"
     hide_timestamp: true
@@ -401,7 +395,5 @@ text_sensor:
       name: "${friendly_name} IP Address"
     ssid:
       name: "${friendly_name} Connected SSID"
-#    bssid:
-#      name: "ESP Connected BSSID"
     mac_address:
       name: "${friendly_name} ESP Mac Wifi Address"
