@@ -70,8 +70,8 @@ web_server:
   local: true
   port: 80
   auth:
-    username: admin
-    password: "6977046664"
+#    username: admin
+#    password: "12345678"
 
 
 status_led:
