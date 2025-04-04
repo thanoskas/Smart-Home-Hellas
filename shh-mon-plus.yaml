@@ -254,7 +254,7 @@ sensor:
 
   - platform: adc
     pin: GPIO36
-    id: presure1
+    id: pressure1
     name: "${friendly_name} Pressure 1"
     accuracy_decimals: 2
     update_interval: 60s
