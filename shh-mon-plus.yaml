@@ -20,9 +20,8 @@ esp32:
   framework:
     type: esp-idf
 
-
 dashboard_import:
-  package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-mon-plus.yaml
+  package_import_url: github://thanoskas/Smart-Home-Hellas/shh-mon-plus.yaml@main
   import_full_config: true
 
 
