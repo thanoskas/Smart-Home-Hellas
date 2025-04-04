@@ -510,9 +510,6 @@ number:
     step: 0.001
     icon: "mdi:cube-outline"
 
-############################### HTTP Update ########################################
-
-
 
 text_sensor:
 #DEBUG TEXT SRENSORS
