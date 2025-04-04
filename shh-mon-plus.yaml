@@ -23,7 +23,6 @@ esp32:
 
 dashboard_import:
   package_import_url: github://https://github.com/thanoskas/Smart-Home-Hellas/blob/main/shh-mon-plus.yaml
-  import the components
   import_full_config: true
 
 
